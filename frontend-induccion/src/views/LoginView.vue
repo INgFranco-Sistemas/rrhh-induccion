@@ -121,9 +121,13 @@ const showPassword = ref(false)
 const handleLogin = async () => {
   try {
     await auth.login(email.value, password.value)
-    router.push({ name: 'home' })
+
+    if (auth.isAdmin) {
+      router.push({ name: 'admin.dashboard' })
+    } else {
+      router.push({ name: 'trabajador.dashboard' })
+    }
   } catch (e) {
-    // el error ya se maneja en el store, aquí solo podríamos loguearlo
     console.error(e)
   }
 }
