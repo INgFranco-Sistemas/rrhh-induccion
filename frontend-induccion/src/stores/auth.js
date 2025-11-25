@@ -1,0 +1,65 @@
+import { defineStore } from 'pinia'
+import api from '../api/axios'
+
+export const useAuthStore = defineStore('auth', {
+  state: () => ({
+    user: null,
+    token: null,
+    isInitialized: false,
+    loading: false,
+    error: null,
+  }),
+
+  getters: {
+    isAuthenticated: (state) => !!state.token,
+    isAdmin: (state) => state.user?.role === 'admin',
+    isTrabajador: (state) => state.user?.role === 'trabajador',
+  },
+
+  actions: {
+    initFromLocalStorage() {
+      const token = localStorage.getItem('token')
+      const user = localStorage.getItem('user')
+
+      if (token) {
+        this.token = token
+      }
+      if (user) {
+        this.user = JSON.parse(user)
+      }
+
+      this.isInitialized = true
+    },
+
+    async login(email, password) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const { data } = await api.post('/auth/login', { email, password })
+
+        this.token = data.access_token
+        this.user = data.user
+
+        localStorage.setItem('token', this.token)
+        localStorage.setItem('user', JSON.stringify(this.user))
+      } catch (error) {
+        if (error.response?.data?.message) {
+          this.error = error.response.data.message
+        } else {
+          this.error = 'Error al iniciar sesión'
+        }
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    logout() {
+      this.token = null
+      this.user = null
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+    },
+  },
+})

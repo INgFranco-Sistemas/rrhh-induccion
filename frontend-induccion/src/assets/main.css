@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Opcional: fuente y fondo general */
+body {
+  @apply bg-slate-900 text-slate-100;
+}
