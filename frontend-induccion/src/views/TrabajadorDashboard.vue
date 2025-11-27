@@ -77,7 +77,7 @@
             :disabled="firmando"
             class="inline-flex items-center rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-500/60 text-slate-950 text-xs font-semibold px-4 py-2 shadow-lg shadow-emerald-500/30"
           >
-            <span v-if="!firmando">Firmar declaración jurada</span>
+            <span v-if="!firmando">DECLARACIÓN JURADA</span>
             <span v-else>Firmando...</span>
           </button>
 
@@ -95,11 +95,12 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
 import { useCursoStore } from '../stores/curso'
 
 const curso = useCursoStore()
+
+const showDeclaracionModal = ref(false)
 const firmando = ref(false)
 const mensajeFirma = ref('')
 const tipoMensajeFirma = ref('') // 'ok' | 'error'
@@ -109,14 +110,15 @@ const progresoPorcentaje = computed(() => {
   return Math.round((curso.completados / curso.totalVideos) * 100)
 })
 
-const mensajeProgreso = computed(() => {
-  if (!curso.totalVideos) return 'Aún no hay videos registrados en el curso.'
-  if (curso.completados === 0) return 'Todavía no has iniciado el curso.'
-  if (curso.completados < curso.totalVideos) {
-    return 'Continúa viendo los videos en el orden indicado hasta completar el curso.'
-  }
-  return 'Has completado todos los videos. Ahora puedes firmar la declaración jurada.'
-})
+const abrirModalDeclaracion = () => {
+  mensajeFirma.value = ''
+  tipoMensajeFirma.value = ''
+  showDeclaracionModal.value = true
+}
+
+const cerrarModalDeclaracion = () => {
+  showDeclaracionModal.value = false
+}
 
 const claseMensajeFirma = computed(() =>
   tipoMensajeFirma.value === 'ok' ? 'text-emerald-400' : 'text-red-400',
@@ -126,9 +128,13 @@ const firmarDeclaracion = async () => {
   firmando.value = true
   mensajeFirma.value = ''
   tipoMensajeFirma.value = ''
+
   try {
-    await curso.firmarDeclaracion({ acepta: true })
-    mensajeFirma.value = 'Declaración firmada correctamente.'
+    const texto =
+      'Declaro bajo juramento que he leído y acepto la declaración jurada del curso de inducción.'
+
+    const resp = await curso.firmarDeclaracion(texto)
+    mensajeFirma.value = resp.message || 'Declaración firmada correctamente.'
     tipoMensajeFirma.value = 'ok'
   } catch (error) {
     console.error(error)
@@ -142,5 +148,6 @@ const firmarDeclaracion = async () => {
 
 onMounted(() => {
   curso.fetchEstado()
+  curso.fetchPlantillaDeclaracion()
 })
 </script>
