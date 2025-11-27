@@ -54,7 +54,18 @@
 
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
         <h2 class="text-lg font-semibold text-slate-50 mb-2">
-          Próximos pasos
+          <ul class="text-sm text-slate-300 space-y-1">
+            <li>Implementar módulo de carga de videos (MP4) desde este panel.</li>
+            <li>Listar y ordenar los videos según el flujo del curso.</li>
+            <li>
+              <RouterLink
+                :to="{ name: 'admin.declaracion' }"
+                class="text-sky-400 hover:text-sky-300"
+              >
+                Configurar la declaración jurada (PDF) que firmarán los trabajadores.
+              </RouterLink>
+            </li>
+          </ul>
         </h2>
         <ul class="list-disc list-inside text-sm text-slate-300 space-y-1">
           <li>Implementar módulo de carga de videos (MP4) desde este panel.</li>
