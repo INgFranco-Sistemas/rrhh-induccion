@@ -21,6 +21,14 @@ class Video extends Model
         'duracion_segundos' => 'integer',
     ];
 
+    // Para que en el JSON aparezca "url"
+    protected $appends = ['url'];
+
+    public function getUrlAttribute(): string
+    {
+        return asset('storage/' . $this->file_path);
+    }
+
     // Un video tiene muchos registros de progreso (uno por usuario)
     public function progresos(): HasMany
     {

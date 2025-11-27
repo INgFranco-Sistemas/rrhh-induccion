@@ -77,18 +77,38 @@ class ProgresoController extends Controller
     {
         $user = $request->user();
 
-        $totalVideos = Video::where('activo', true)->count();
+        // Traemos todos los videos del curso ordenados
+        $videos = Video::orderBy('orden')->get();
 
-        $videosCompletados = VideoUserProgress::where('user_id', $user->id)
-            ->where('completado', true)
-            ->count();
+        // Traemos el progreso del usuario
+        $progresos = VideoUserProgress::where('user_id', $user->id)
+            ->get()
+            ->keyBy('video_id'); // para acceder rápido
 
-        $puedeFirmar = ($totalVideos > 0) && ($videosCompletados === $totalVideos);
+        // Construimos la lista final de videos
+        $videosEstado = $videos->map(function (Video $video) use ($progresos) {
+
+            $prog = $progresos->get($video->id);
+
+            return [
+                'id'                => $video->id,
+                'titulo'            => $video->titulo,
+                'descripcion'       => $video->descripcion,
+                'orden'             => $video->orden,
+                'duracion_segundos' => $video->duracion_segundos,
+                'file_path'         => $video->file_path,
+                'completado'        => $prog?->completado ?? false,
+            ];
+        });
+
+        // Revisamos si ya terminó todo
+        $todosCompletos = $videosEstado->every(fn ($v) => $v['completado']);
 
         return response()->json([
-            'total_videos' => $totalVideos,
-            'completados'  => $videosCompletados,
-            'puede_firmar' => $puedeFirmar,
+            'videos'            => $videosEstado->values(),
+            'puede_firmar'      => $todosCompletos,
+            'declaracion_firmada' => false,
+            'declaracion'       => null,
         ]);
     }
 }

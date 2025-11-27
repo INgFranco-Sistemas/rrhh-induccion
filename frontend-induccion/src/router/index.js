@@ -4,6 +4,8 @@ import LoginView from '../views/LoginView.vue'
 import AdminDashboard from '../views/AdminDashboard.vue'
 import TrabajadorDashboard from '../views/TrabajadorDashboard.vue'
 import AdminVideos from '../views/AdminVideos.vue'
+import TrabajadorVideos from '../views/TrabajadorVideos.vue'
+import VideoPlayerView from '../views/VideoPlayerView.vue'
 
 const routes = [
   {
@@ -42,10 +44,17 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/curso',
-    name: 'trabajador.dashboard',
-    component: TrabajadorDashboard,
+    path: '/curso/videos',
+    name: 'trabajador.videos',
+    component: TrabajadorVideos,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/curso/videos/:id',
+    name: 'trabajador.video',
+    component: VideoPlayerView,
+    meta: { requiresAuth: true },
+    props: true,
   },
 ]
 
