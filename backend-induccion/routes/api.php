@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\ProgresoController;
-use App\Http\Controllers\DeclaracionJuradaController;
+use App\Http\Controllers\DeclaracionTemplateController;
+
 
 // Rutas públicas (sin autenticación)
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -25,6 +26,9 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/videos', [VideoController::class, 'store']);
         Route::post('/videos/{video}', [VideoController::class, 'update']);
         Route::delete('/videos/{video}', [VideoController::class, 'destroy']);
+
+        Route::get('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'show']);
+        Route::post('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'store']);
     });
 
     // Todos los usuarios autenticados (admin + trabajador)
