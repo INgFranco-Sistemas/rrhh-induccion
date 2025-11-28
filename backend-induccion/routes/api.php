@@ -30,9 +30,9 @@ Route::middleware('auth:api')->group(function () {
 
         Route::get('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'show']);
         Route::post('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'store']);
-        Route::get('/declaracion-plantilla', [DeclaracionTemplateController::class, 'show']);
     });
-
+    
+    Route::get('/declaracion-plantilla', [DeclaracionTemplateController::class, 'show']);
     // Todos los usuarios autenticados (admin + trabajador)
     Route::get('/videos', [VideoController::class, 'index']);
     Route::get('/videos/{video}', [VideoController::class, 'show']);

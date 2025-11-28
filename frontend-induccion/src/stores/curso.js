@@ -42,15 +42,16 @@ export const useCursoStore = defineStore('curso', {
     },
 
    async fetchPlantillaDeclaracion() {
-      try {
-        const { data } = await api.get('/declaracion-plantilla') // 👈 sin /admin
-        console.log('plantilla desde API =>', data)              // 👈 agrega este log
-        this.plantillaDeclaracion = data
-      } catch (error) {
-        console.error('Error cargando plantilla de declaración:', error)
-        this.plantillaDeclaracion = null
-      }
-    },
+  try {
+    const { data } = await api.get('/declaracion-plantilla') // 👈
+    console.log('plantilla desde API =>', data)
+    this.plantillaDeclaracion = data          // 👈 SOLO guarda data
+  } catch (error) {
+    console.error('Error cargando plantilla de declaración:', error)
+    this.plantillaDeclaracion = null
+  }
+},
+
     async firmarDeclaracion(texto) {
       const { data } = await api.post('/declaracion/firmar', {
         texto_declaracion: texto,
