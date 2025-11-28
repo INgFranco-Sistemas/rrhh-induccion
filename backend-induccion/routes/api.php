@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\ProgresoController;
 use App\Http\Controllers\DeclaracionTemplateController;
+use App\Http\Controllers\DeclaracionJuradaController;
 
 
 // Rutas públicas (sin autenticación)
@@ -29,6 +30,7 @@ Route::middleware('auth:api')->group(function () {
 
         Route::get('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'show']);
         Route::post('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'store']);
+        Route::get('/declaracion-plantilla', [DeclaracionTemplateController::class, 'show']);
     });
 
     // Todos los usuarios autenticados (admin + trabajador)

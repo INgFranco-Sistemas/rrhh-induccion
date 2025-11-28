@@ -8,27 +8,36 @@ use Illuminate\Support\Facades\Storage;
 
 class DeclaracionTemplateController extends Controller
 {
-    // GET /api/admin/declaracion-plantilla
+    // GET /api/declaracion-plantilla  (para trabajador y admin)
     public function show()
     {
         $template = DeclaracionTemplate::latest()->first();
 
-        return response()->json($template);
+        if (! $template) {
+            return response()->json(null);
+        }
+
+        return response()->json([
+            'id'        => $template->id,
+            'nombre'    => $template->nombre,
+            'file_path' => $template->file_path,
+            'url'       => asset('storage/'.$template->file_path), // 👈 importante
+        ]);
     }
 
-    // POST /api/admin/declaracion-plantilla
+    // POST /api/admin/declaracion-plantilla (solo admin)
     public function store(Request $request)
     {
         $request->validate([
-            'archivo' => 'required|file|mimes:pdf|max:20480', // máx ~20MB
+            'archivo' => 'required|file|mimes:pdf|max:20480',
         ]);
 
         $file = $request->file('archivo');
 
-        // Guardamos en storage/app/public/declaraciones
+        // Guardar en storage/app/public/declaraciones
         $path = $file->store('declaraciones', 'public');
 
-        // Borramos el archivo anterior si existiera
+        // Eliminar anterior si existe
         $anterior = DeclaracionTemplate::latest()->first();
         if ($anterior) {
             Storage::disk('public')->delete($anterior->file_path);
