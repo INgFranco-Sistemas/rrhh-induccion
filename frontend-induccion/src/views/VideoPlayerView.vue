@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-[calc(100vh-56px)] bg-slate-950">
+  <div class="min-h-[calc(100vh-56px)] bg-slate-950 justify-center
+           bg-gradient-to-br from-[#022c22] via-[#02131a] to-[#16a34a]">
     <div class="max-w-4xl mx-auto px-4 py-8">
       <div class="flex items-center justify-between mb-4 gap-3">
         <div>
