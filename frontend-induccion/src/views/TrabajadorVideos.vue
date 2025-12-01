@@ -109,15 +109,10 @@ import { useCursoStore } from '../stores/curso'
 const curso = useCursoStore()
 
 const videosConEstado = computed(() => {
-  const ordenados = [...curso.videos].sort((a, b) => a.orden - b.orden)
-  const primerPend = curso.primerOrdenPendiente
-
-  return ordenados.map((v) => ({
-    ...v,
-    // Bloquea videos con orden > primer incompleto
-    bloqueado: primerPend !== null && v.orden > primerPend,
-  }))
+  // Solo ordenamos, NO tocamos bloqueado
+  return [...curso.videos].sort((a, b) => (a.orden || 0) - (b.orden || 0))
 })
+
 
 onMounted(() => {
   curso.fetchEstado()

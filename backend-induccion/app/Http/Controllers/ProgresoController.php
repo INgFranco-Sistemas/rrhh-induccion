@@ -73,42 +73,55 @@ class ProgresoController extends Controller
 
     // Estado general del curso para el usuario logueado
     // GET /api/curso/estado
-    public function estadoCurso(Request $request)
-    {
-        $user = $request->user();
+    // Estado general del curso para el usuario logueado
+// GET /api/curso/estado
+public function estadoCurso(Request $request)
+{
+    $user = $request->user();
 
-        // Traemos todos los videos del curso ordenados
-        $videos = Video::orderBy('orden')->get();
+    // Traemos todos los videos del curso ordenados
+    $videos = Video::where('activo', true)
+        ->orderBy('orden')
+        ->get();
 
-        // Traemos el progreso del usuario
-        $progresos = VideoUserProgress::where('user_id', $user->id)
-            ->get()
-            ->keyBy('video_id'); // para acceder rápido
+    // Traemos el progreso del usuario
+    $progresos = VideoUserProgress::where('user_id', $user->id)
+        ->get()
+        ->keyBy('video_id'); // para acceder rápido por ID
 
-        // Construimos la lista final de videos
-        $videosEstado = $videos->map(function (Video $video) use ($progresos) {
+    $videosEstado = [];
+    $anteriorCompletado = true; // el primer video siempre va desbloqueado
 
-            $prog = $progresos->get($video->id);
+    foreach ($videos as $video) {
+        $prog = $progresos->get($video->id);
 
-            return [
-                'id'                => $video->id,
-                'titulo'            => $video->titulo,
-                'descripcion'       => $video->descripcion,
-                'orden'             => $video->orden,
-                'duracion_segundos' => $video->duracion_segundos,
-                'file_path'         => $video->file_path,
-                'completado'        => $prog?->completado ?? false,
-            ];
-        });
+        $completado = $prog?->completado ?? false;
 
-        // Revisamos si ya terminó todo
-        $todosCompletos = $videosEstado->every(fn ($v) => $v['completado']);
+        $videosEstado[] = [
+            'id'                => $video->id,
+            'titulo'            => $video->titulo,
+            'descripcion'       => $video->descripcion,
+            'orden'             => $video->orden,
+            'duracion_segundos' => $video->duracion_segundos,
+            'file_path'         => $video->file_path,
+            'url'               => $video->url,      // por si lo usas en el front
+            'completado'        => $completado,
+            'bloqueado'         => !$anteriorCompletado, // 👈 AQUÍ EL BLOQUEO
+        ];
 
-        return response()->json([
-            'videos'            => $videosEstado->values(),
-            'puede_firmar'      => $todosCompletos,
-            'declaracion_firmada' => false,
-            'declaracion'       => null,
-        ]);
+        // Para el siguiente video: solo estará desbloqueado si ESTE está completado
+        $anteriorCompletado = $completado;
     }
+
+    // Revisamos si ya terminó todo
+    $todosCompletos = collect($videosEstado)->every(fn ($v) => $v['completado']);
+
+    return response()->json([
+        'videos'              => array_values($videosEstado),
+        'puede_firmar'        => $todosCompletos,
+        'declaracion_firmada' => false,
+        'declaracion'         => null,
+    ]);
+}
+
 }
