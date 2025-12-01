@@ -6,7 +6,7 @@
       <div class="flex items-center justify-between mb-6 gap-3">
         <div>
           <h1 class="text-2xl font-semibold text-slate-50">
-            Gestión de Videos del Curso
+            Gestión de Videos del Proceso de Inducción
           </h1>
           <p class="text-sm text-slate-400">
             Administra los videos MP4 del curso de inducción.
