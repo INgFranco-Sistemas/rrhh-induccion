@@ -3,14 +3,19 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
       <!-- Izquierda: logo y título -->
       <div class="flex items-center gap-3">
-        <div
-          class="h-9 w-9 flex items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/50 text-sky-400 font-bold text-lg"
-        >
-          I
+        <!-- Icono / inicial -->
+        <div class="flex justify-center mb-6">
+          <div>
+              <img
+                :src="logoGrh"
+                alt="Logo Gobierno Regional Huánuco"
+                class="object-contain h-14 -mb-6 drop-shadow-[0_0_8px_rgba(16,185,129,0.45)]"
+              />
+            </div>
         </div>
         <div>
           <p class="text-sm font-semibold text-slate-100">
-            Sistema de Inducción
+            Proceso de Inducción
           </p>
           <p class="text-xs text-slate-400">
             Gobierno Regional Huánuco
@@ -41,6 +46,7 @@
 </template>
 
 <script setup>
+import logoGrh from '../assets/logo-grh.png'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 

@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-[calc(100vh-56px)] bg-slate-950">
+  <div class="min-h-[calc(100vh-56px)] bg-slate-950 justify-center
+           bg-gradient-to-br from-[#022c22] via-[#02131a] to-[#16a34a]">
     <div class="max-w-6xl mx-auto px-4 py-8">
       <h1 class="text-2xl font-semibold text-slate-50 mb-2">
         Panel del Administrador

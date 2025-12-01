@@ -1,10 +1,11 @@
 <template>
-  <div class="min-h-screen bg-slate-950 text-slate-50">
+  <div class="min-h-[calc(100vh-56px)] bg-slate-950 justify-center
+           bg-gradient-to-br from-[#022c22] via-[#02131a] to-[#16a34a]">
     <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
 
       <!-- ENCABEZADO -->
       <header class="space-y-1">
-        <h1 class="text-2xl font-semibold">Bienvenido al Curso de Inducción</h1>
+        <h1 class="text-2xl font-semibold">Bienvenido al Proceso de Inducción</h1>
         <p class="text-sm text-slate-400">
           Completa todos los videos en orden y firma tu declaración jurada al finalizar.
         </p>
@@ -19,10 +20,10 @@
         >
           <div class="space-y-1">
             <p class="text-xs font-semibold text-sky-400 uppercase tracking-wide">
-              Curso de inducción
+              Proceso de inducción
             </p>
             <p class="text-sm text-slate-50">
-              Comenzar curso de inducción
+              Comenzar Proceso de inducción
             </p>
             <p class="text-xs text-slate-400">
               Accede a la lista de videos y síguelos en el orden indicado.
@@ -45,7 +46,7 @@
         >
           <div class="flex items-center justify-between gap-3">
             <p class="text-sm font-semibold text-slate-50">
-              Progreso del curso
+              Progreso del Proceso
             </p>
             <p class="text-xs text-slate-400">
               {{ curso.completados }} / {{ curso.totalVideos }} videos completados
@@ -146,7 +147,7 @@
         <!-- Cuerpo modal -->
         <div class="flex-1 flex flex-col md:flex-row">
           <!-- PDF -->
-          <div class="flex-1 min-h-[300px] border-b md:border-b-0 md:border-r border-slate-800">
+          <div class="flex-1 min-h-[800px] border-b md:border-b-0 md:border-r border-slate-800">
             <iframe
               v-if="curso.plantillaDeclaracion?.url"
               :src="curso.plantillaDeclaracion.url"
