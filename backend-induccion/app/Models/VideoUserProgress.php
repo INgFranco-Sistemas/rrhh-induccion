@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class VideoUserProgress extends Model
 {
     protected $table = 'video_user_progress'; // nombre explícito
+    protected $connection = 'induccion';
 
     protected $fillable = [
         'user_id',

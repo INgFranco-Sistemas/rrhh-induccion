@@ -23,7 +23,7 @@ const routes = [
     meta: { requiresAuth: true },
     beforeEnter: (to, from, next) => {
       const auth = useAuthStore()
-      if (auth.isAdmin) return next({ name: 'admin.dashboard' })
+      if (auth.rol_principal) return next({ name: 'admin.dashboard' })
       return next({ name: 'trabajador.dashboard' })
     },
   },
@@ -104,7 +104,7 @@ router.beforeEach((to, from, next) => {
   }
 
   // Verificar rol si la ruta lo exige
-  if (to.meta.role && auth.user?.role !== to.meta.role) {
+  if (to.meta.role && auth.rol_principal !== to.meta.role) {
     return next({ name: 'root' })
   }
 

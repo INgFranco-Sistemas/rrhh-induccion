@@ -8,12 +8,16 @@ export const useAuthStore = defineStore('auth', {
     isInitialized: false,
     loading: false,
     error: null,
+    sede: null,
+    roles: [],
+    rol_principal: null,
+    permissions: [],
   }),
 
   getters: {
     isAuthenticated: (state) => !!state.token,
-    isAdmin: (state) => state.user?.role === 'admin',
-    isTrabajador: (state) => state.user?.role === 'trabajador',
+    // isAdmin: (state) => state.user?.role === 'admin',
+    // isTrabajador: (state) => state.user?.role === 'trabajador',
   },
 
   actions: {
@@ -31,24 +35,28 @@ export const useAuthStore = defineStore('auth', {
       this.isInitialized = true
     },
 
-    async login(email, password) {
+    async login(adm_email, password) {
       this.loading = true
       this.error = null
 
       try {
-        const { data } = await api.post('/auth/login', { email, password })
+        const { data } = await api.post('/auth/login', { adm_email, password })
 
         this.token = data.access_token
         this.user = data.user
+        this.sede = data.sede
+
+        // 🔒 Filtrar roles: solo los permitidos
+        this.roles = data.roles || []
+
+        this.rol_principal = data.rol_principal
+
+        this.permissions = data.permissions || []
 
         localStorage.setItem('token', this.token)
         localStorage.setItem('user', JSON.stringify(this.user))
       } catch (error) {
-        if (error.response?.data?.message) {
-          this.error = error.response.data.message
-        } else {
-          this.error = 'Error al iniciar sesión'
-        }
+        this.error = error.response?.data?.message || 'Error al iniciar sesión'
         throw error
       } finally {
         this.loading = false
@@ -58,8 +66,11 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       this.token = null
       this.user = null
+      this.roles = []
       localStorage.removeItem('token')
       localStorage.removeItem('user')
     },
   },
+
+  persist: true
 })

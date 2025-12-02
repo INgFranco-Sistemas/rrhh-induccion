@@ -27,10 +27,10 @@
       <div class="flex items-center gap-4">
         <div class="hidden sm:flex flex-col items-end text-right">
           <span class="text-sm font-medium text-slate-100">
-            {{ auth.user?.name || 'Usuario' }}
+            {{ auth.user?.adm_name || 'Usuario' }}
           </span>
           <span class="text-[11px] uppercase tracking-wide text-sky-400">
-            {{ auth.user?.role === 'admin' ? 'Administrador' : 'Trabajador' }}
+            {{ auth.rol_principal === 'admin' ? 'Administrador' : 'Trabajador' }}
           </span>
         </div>
 

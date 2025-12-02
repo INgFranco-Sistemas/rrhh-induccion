@@ -21,6 +21,10 @@ class Video extends Model
         'duracion_segundos' => 'integer',
     ];
 
+     protected $connection = 'induccion';
+     protected $table = 'videos';
+
+
     // Para que en el JSON aparezca "url"
     protected $appends = ['url'];
 

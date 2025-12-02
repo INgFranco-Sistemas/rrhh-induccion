@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class DeclaracionJurada extends Model
 {
     protected $table = 'declaraciones_juradas';
+    protected $connection = 'induccion';
 
     protected $fillable = [
         'user_id',

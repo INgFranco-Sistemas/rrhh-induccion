@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class DeclaracionTemplate extends Model
 {
     protected $table = 'declaracion_templates';
+    protected $connection = 'induccion';
 
     protected $fillable = [
         'nombre',
