@@ -44,11 +44,11 @@
           <p class="text-xs uppercase tracking-wide text-amber-400 mb-1">
             Seguimiento
           </p>
-          <p class="text-lg font-semibold text-slate-50">
+          <RouterLink :to="{ name: 'admin.seguimiento' }">
             Progreso de Personal
-          </p>
+          </RouterLink>
           <p class="mt-2 text-sm text-slate-400">
-            Más adelante mostraremos estadísticas de finalización y firmas.
+            Podras vizualizar cantidad de trabajadores, lo que no inician la inducción, los que estan en proceso, los que completaron,etc.
           </p>
         </div>
       </div>

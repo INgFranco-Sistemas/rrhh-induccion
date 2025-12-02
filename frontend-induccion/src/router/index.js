@@ -7,6 +7,7 @@ import AdminVideos from '../views/AdminVideos.vue'
 import TrabajadorVideos from '../views/TrabajadorVideos.vue'
 import VideoPlayerView from '../views/VideoPlayerView.vue'
 import AdminDeclaracion from '../views/AdminDeclaracion.vue'
+import AdminSeguimientoView from '../views/AdminSeguimientoView.vue'
 
 const routes = [
   {
@@ -63,6 +64,12 @@ const routes = [
     component: AdminDeclaracion,
     meta: { requiresAuth: true }, // y si manejas roles: role: 'admin'
   },
+  {
+    path: '/admin/seguimiento',
+    name: 'admin.seguimiento',
+    component: () => import('../views/AdminSeguimientoView.vue'),
+    meta: { requiresAuth: true, role: 'admin' }, // ajusta si usas roles
+  }
 ]
 
 const router = createRouter({
