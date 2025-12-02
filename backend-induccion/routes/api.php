@@ -34,6 +34,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/declaracion/firmar', [DeclaracionJuradaController::class, 'firmar']);
     Route::get('/declaracion/mia', [DeclaracionJuradaController::class, 'miDeclaracion']);
     Route::get('/admin/seguimiento/curso', [SeguimientoController::class, 'curso']);
+    Route::get('/admin/seguimiento/usuario/{user}', [SeguimientoController::class, 'usuario']);
 
     // === VIDEOS ===
     // Admin

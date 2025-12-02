@@ -69,6 +69,12 @@ const routes = [
     name: 'admin.seguimiento',
     component: () => import('../views/AdminSeguimientoView.vue'),
     meta: { requiresAuth: true, role: 'admin' }, // ajusta si usas roles
+  },
+  {
+    path: '/admin/seguimiento/usuario/:id',
+    name: 'admin.seguimiento.detalle',
+    component: () => import('../views/AdminSeguimientoUsuarioView.vue'),
+    meta: { requiresAuth: true }, // y role admin si lo manejas
   }
 ]
 

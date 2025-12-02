@@ -145,8 +145,14 @@
                 class="border-t border-slate-800/70 hover:bg-slate-900/60"
               >
                 <td class="px-4 py-2 text-slate-50">
-                  {{ t.nombre }}
+                  <RouterLink
+                    :to="{ name: 'admin.seguimiento.detalle', params: { id: t.id } }"
+                    class="hover:text-sky-300 underline decoration-slate-500/60 decoration-dotted underline-offset-2"
+                  >
+                    {{ t.nombre }}
+                  </RouterLink>
                 </td>
+
                 <td class="px-4 py-2 text-slate-400">
                   {{ t.correo }}
                 </td>
