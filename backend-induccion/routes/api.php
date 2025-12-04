@@ -38,12 +38,12 @@ Route::middleware('auth:api')->group(function () {
 
     // === VIDEOS ===
     // Admin
-    Route::middleware('role:admin')->group(function () {
-        Route::post('/videos', [VideoController::class, 'store']);
-        Route::post('/videos/{video}', [VideoController::class, 'update']);
-        Route::delete('/videos/{video}', [VideoController::class, 'destroy']);
+    // Route::middleware('role:admin')->group(function () {
+        Route::post('/admvideos', [VideoController::class, 'store']);
+        Route::post('/admvideos/{video}', [VideoController::class, 'update']);
+        Route::delete('/admvideos/{video}', [VideoController::class, 'destroy']);
 
         Route::get('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'show']);
         Route::post('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'store']);
-    });
+    // });
 });

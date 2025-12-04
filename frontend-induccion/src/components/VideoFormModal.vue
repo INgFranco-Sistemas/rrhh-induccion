@@ -215,7 +215,7 @@ const handleCreate = async () => {
     }
     fd.append('video', form.value.file)
 
-    await api.post('/videos', fd, {
+    await api.post('/admvideos', fd, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
