@@ -10,7 +10,11 @@ return new class extends Migration
     {
         Schema::create('video_user_progress', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // // $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // $table->foreignId('user_id')
+            //     ->constrained('admin', 'id') // referencia correcta
+            //     ->onDelete('cascade');
+            $table->unsignedBigInteger('user_id');
             $table->foreignId('video_id')->constrained()->onDelete('cascade');
             $table->integer('segundos_vistos')->default(0);
             $table->boolean('completado')->default(false);

@@ -26,7 +26,7 @@ class VideoUserProgress extends Model
 
     public function usuario(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function video(): BelongsTo

@@ -105,12 +105,23 @@ const messageClass = computed(() => {
     : 'text-slate-400'
 })
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL.replace('/api', '') // quitamos /api para usar host base
+
 // Construcción de URL del video
+// const videoUrl = computed(() => {
+  
+//   if (video.value?.url) return video.value.url
+//   if (video.value?.file_path) {
+//     // Ajusta el host si tu backend no está en 127.0.0.1:8000
+//     return `http://127.0.0.1:8000/storage/${video.value.file_path}`
+//   }
+//   return ''
+// })
+
 const videoUrl = computed(() => {
   if (video.value?.url) return video.value.url
   if (video.value?.file_path) {
-    // Ajusta el host si tu backend no está en 127.0.0.1:8000
-    return `http://127.0.0.1:8000/storage/${video.value.file_path}`
+    return `${API_BASE_URL}/storage/${video.value.file_path}`
   }
   return ''
 })
@@ -158,7 +169,7 @@ const handleEnded = async () => {
 
     console.log('Respuesta progreso:', data)
     // Actualizar estado local del curso
-    curso.marcarVideoCompletoLocal(id)
+    // curso.marcarVideoCompletoLocal(id)
 
     message.value = 'Progreso registrado. Puedes continuar con el siguiente video.'
     messageType.value = 'ok'
