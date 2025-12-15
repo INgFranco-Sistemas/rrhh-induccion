@@ -170,7 +170,7 @@ const handleDelete = async (video) => {
   errorList.value = null
 
   try {
-    await api.delete(`/videos/${video.id}`)
+    await api.delete(`/admvideos/${video.id}`)
     videos.value = videos.value.filter((v) => v.id !== video.id)
   } catch (error) {
     console.error(error)

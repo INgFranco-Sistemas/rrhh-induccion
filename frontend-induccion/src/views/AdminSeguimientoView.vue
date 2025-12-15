@@ -197,6 +197,46 @@
               </tr>
             </tbody>
           </table>
+
+          <div class="flex items-center justify-between px-4 py-3 text-xs text-slate-400">
+  <div>
+    Mostrando
+    <span class="font-semibold">
+      {{ pagination.from || 0 }} – {{ pagination.to || 0 }}
+    </span>
+    de
+    <span class="font-semibold">
+      {{ pagination.total }}
+    </span>
+    trabajadores
+  </div>
+
+  <div class="inline-flex items-center gap-2">
+    <button
+      class="px-3 py-1 rounded-lg border border-slate-700 text-slate-300 text-[11px]"
+      :disabled="pagination.current_page <= 1"
+      @click="prevPage"
+    >
+      ‹ Anterior
+    </button>
+
+    <span>
+      Página
+      <span class="font-semibold">{{ pagination.current_page }}</span>
+      de
+      <span class="font-semibold">{{ pagination.last_page }}</span>
+    </span>
+
+    <button
+      class="px-3 py-1 rounded-lg border border-slate-700 text-slate-300 text-[11px]"
+      :disabled="pagination.current_page >= pagination.last_page"
+      @click="nextPage"
+    >
+      Siguiente ›
+    </button>
+  </div>
+</div>
+
         </div>
 
         <p v-if="error" class="px-4 py-3 text-xs text-red-400">
@@ -215,6 +255,14 @@ import api from '../api/axios'
 const loading = ref(false)
 const error = ref(null)
 const resumen = ref({})
+const pagination = ref({
+  current_page: 1,
+  last_page: 1,
+  per_page: 25,
+  total: 0,
+})
+
+const perPage = 25
 const trabajadores = ref([])
 
 // Filtros y orden
@@ -224,19 +272,40 @@ const ordenPor = ref('nombre') // clave por la que ordenamos
 const direccionOrden = ref('asc') // 'asc' | 'desc'
 
 
-const fetchSeguimiento = async () => {
-  loading.value = true
-  error.value = null
+const fetchSeguimiento = async (page = 1) => {
   try {
-    const { data } = await api.get('/admin/seguimiento/curso')
-    resumen.value = data.resumen || {}
-    trabajadores.value = data.trabajadores || []
-  } catch (err) {
-    console.error(err)
-    error.value = 'No se pudo cargar la información de seguimiento.'
-  } finally {
-    loading.value = false
+    const { data } = await api.get('/admin/seguimiento/curso', {
+      params: {
+        page,
+        per_page: perPage,
+      },
+    })
+
+    resumen.value = data.resumen
+    trabajadores.value = data.trabajadores
+    pagination.value = data.pagination
+  } catch (error) {
+    console.error(error)
+    // aquí ya tienes tu mensaje "No se pudo cargar..."
   }
+}
+
+const goToPage = (page) => {
+  if (
+    page >= 1 &&
+    page <= pagination.value.last_page &&
+    page !== pagination.value.current_page
+  ) {
+    fetchSeguimiento(page)
+  }
+}
+
+const nextPage = () => {
+  goToPage(pagination.value.current_page + 1)
+}
+
+const prevPage = () => {
+  goToPage(pagination.value.current_page - 1)
 }
 
 // Cambiar criterio de orden
@@ -294,6 +363,8 @@ const trabajadoresFiltradosYOrdenados = computed(() => {
   return lista
 })
 
-onMounted(fetchSeguimiento)
+onMounted(() => {
+  fetchSeguimiento(1)
+})
 
 </script>

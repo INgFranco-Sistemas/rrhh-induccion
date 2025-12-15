@@ -12,77 +12,130 @@ class SeguimientoController extends Controller
 {
     // GET /api/admin/seguimiento/curso
     public function curso(Request $request)
-    {
-        // 1) Total de videos activos
-        $totalVideos = Video::where('activo', true)->count();
+{
+    // 1) Total de videos activos
+    $totalVideos = Video::where('activo', true)->count();
 
-        // 2) Progreso agrupado por usuario (TODO en PHP, nada de SQL raro)
-        $progresosPorUsuario = VideoUserProgress::all()->groupBy('user_id');
+    // 2) Progresos agrupados por user_id
+    $progresosPorUsuario = VideoUserProgress::all()->groupBy('user_id');
 
-        // 3) Lista de trabajadores
-        //    Por ahora, TODOS los usuarios (luego filtramos por rol si quieres)
-        $trabajadores = User::all();
+    // 3) Declaraciones firmadas por user_id
+    $declaracionesPorUsuario = DeclaracionJurada::whereNotNull('firmado_at')
+        ->get()
+        ->keyBy('user_id');
 
-        $lista = [];
-        $contadores = [
-            'no_iniciado' => 0,
-            'en_progreso' => 0,
-            'completado'  => 0,
-        ];
+    // 4) Trabajadores ACTIVOS (tabla admin a través del modelo User)
+    $trabajadores = User::query()
+                        ->join('tram_dependencia as d', 'd.iddependencia', '=', 'admin.depe_id')
+                        ->where('admin.adm_estado', 1)
+                        ->where('d.depe_depende', 3)
+                        ->get();
+    $lista = [];
+    $contadores = [
+        'no_iniciado' => 0,
+        'en_progreso' => 0,
+        'completado'  => 0,
+    ];
 
-        foreach ($trabajadores as $user) {
-            // Colección de progresos de ESTE usuario (puede venir vacía)
-            $progresosUser = $progresosPorUsuario->get($user->id, collect());
+    foreach ($trabajadores as $user) {
+        // Progresos de este usuario
+        $progresosUser = $progresosPorUsuario->get($user->id, collect());
 
-            // Contar solo los que tienen completado = true
-            $completados = $progresosUser->where('completado', true)->count();
+        $videosCompletados = $progresosUser->where('completado', true)->count();
+        $ultimaActividad   = $progresosUser->max('updated_at');
 
-            // Última actividad: updated_at más reciente
-            $ultima = $progresosUser->max('updated_at');
+        $porcentaje = $totalVideos > 0
+            ? round(($videosCompletados / $totalVideos) * 100)
+            : 0;
 
-            // Porcentaje de avance
-            $porcentaje = $totalVideos > 0
-                ? round(($completados / $totalVideos) * 100)
-                : 0;
+        // Declaración
+        $declaracion = $declaracionesPorUsuario->get($user->id);
+        $declaracionFirmada = $declaracion && $declaracion->firmado_at !== null;
 
-            // Estado según avance
-            if ($totalVideos === 0 || $completados === 0) {
-                $estado = 'no_iniciado';
-            } elseif ($completados < $totalVideos) {
-                $estado = 'en_progreso';
-            } else {
-                $estado = 'completado';
-            }
-
-            $contadores[$estado]++;
-
-            // TODO: aquí luego conectamos con la tabla de declaración jurada
-            $declaracionFirmada = false;
-
-            $lista[] = [
-                'id'                  => $user->id,
-                'nombre'              => $user->name,   // AJUSTA si tus campos se llaman diferente
-                'correo'              => $user->email,  // idem
-                'videos_completados'  => $completados,
-                'total_videos'        => $totalVideos,
-                'porcentaje'          => $porcentaje,
-                'estado'              => $estado,
-                'ultima_actividad'    => $ultima,
-                'declaracion_firmada' => $declaracionFirmada,
-            ];
+        // Estado general
+        if ($totalVideos === 0 || $videosCompletados === 0) {
+            $estado = 'no_iniciado';
+        } elseif ($videosCompletados < $totalVideos) {
+            $estado = 'en_progreso';
+        } else {
+            $estado = $declaracionFirmada ? 'completado' : 'en_progreso';
         }
 
-        return response()->json([
-            'resumen' => [
-                'total_trabajadores' => $trabajadores->count(),
-                'total_videos'       => $totalVideos,
-                'no_iniciado'        => $contadores['no_iniciado'],
-                'en_progreso'        => $contadores['en_progreso'],
-                'completado'         => $contadores['completado'],
-            ],
-            'trabajadores' => $lista,
-        ]);
+        $contadores[$estado]++;
+
+        $lista[] = [
+            'id'                  => $user->id,
+            'nombre'              => trim($user->adm_name . ' ' . $user->adm_lastname),  // viene de adm_name + adm_lastname
+            'correo'              => $user->adm_correo,  // viene de adm_correo/adm_email
+            'videos_completados'  => $videosCompletados,
+            'total_videos'        => $totalVideos,
+            'porcentaje'          => $porcentaje,
+            'estado'              => $estado,
+            'ultima_actividad'    => $ultimaActividad,
+            'declaracion_firmada' => $declaracionFirmada,
+        ];
     }
+
+    $search = trim($request->query('q', ''));
+
+    if ($search !== '') {
+        $lista = array_values(array_filter($lista, function ($item) use ($search) {
+            $nombre = mb_strtolower($item['nombre'] ?? '', 'UTF-8');
+            $correo = mb_strtolower($item['correo'] ?? '', 'UTF-8');
+            $q      = mb_strtolower($search, 'UTF-8');
+
+            return mb_stripos($nombre, $q, 0, 'UTF-8') !== false
+                || mb_stripos($correo, $q, 0, 'UTF-8') !== false;
+        }));
+    }
+
+    // -----------------------------
+    //  PAGINACIÓN SOBRE $lista
+    // -----------------------------
+    $total   = count($lista);
+
+    $page    = (int) $request->query('page', 1);
+    $perPage = (int) $request->query('per_page', 25);
+
+    if ($page < 1) {
+        $page = 1;
+    }
+    if ($perPage < 1) {
+        $perPage = 25;
+    }
+
+    $offset = ($page - 1) * $perPage;
+
+    // Nos aseguramos de no salirnos del rango
+    if ($offset > $total) {
+        $offset = max(0, $total - $perPage);
+        $page   = $offset > 0 ? (int) floor($offset / $perPage) + 1 : 1;
+    }
+
+    $trabajadoresPagina = array_slice($lista, $offset, $perPage);
+
+    $pagination = [
+        'total'        => $total,
+        'per_page'     => $perPage,
+        'current_page' => $page,
+        'last_page'    => $total > 0 ? (int) ceil($total / $perPage) : 1,
+        'from'         => $total ? $offset + 1 : 0,
+        'to'           => $total ? $offset + count($trabajadoresPagina) : 0,
+    ];
+
+    return response()->json([
+        'resumen' => [
+            'total_trabajadores' => $total,
+            'total_videos'       => $totalVideos,
+            'no_iniciado'        => $contadores['no_iniciado'],
+            'en_progreso'        => $contadores['en_progreso'],
+            'completado'         => $contadores['completado'],
+        ],
+        'trabajadores' => $trabajadoresPagina,
+        'pagination'   => $pagination,
+    ]);
+}
+
 
     public function usuario(User $user)
 {
