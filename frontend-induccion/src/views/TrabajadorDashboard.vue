@@ -184,6 +184,7 @@
         </div>
       </div>
     </div>
+    <div id="addComponent" style="display:none;"></div>
   </div>
 </template>
 
@@ -239,7 +240,7 @@ const firmarDeclaracion = async () => {
   try {
     const texto =
       'Declaro bajo juramento que he leído y acepto la declaración jurada del curso de inducción.'
-    const resp = await curso.firmarDeclaracion(texto)
+    const resp = await curso.firmarDeclaracion(texto, curso.plantillaDeclaracion.id)
 
     mensajeFirma.value = resp.message || 'Declaración firmada correctamente.'
     tipoMensajeFirma.value = 'ok'
