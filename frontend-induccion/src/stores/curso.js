@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '../api/axios'
 import FirmaPeruIntegrador from '../FirmaPeru'
+import { useAuthStore } from './auth'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL.replace('/api', '') // quitamos /api para usar host base
 
@@ -56,29 +57,26 @@ export const useCursoStore = defineStore('curso', {
     },
 
     async firmarDeclaracion(texto, idfile = null) {
-      // const { data } = await api.post('/declaracion/firmar', {
-      //   texto_declaracion: texto,
-      //   idfile: idfile,
-      // })
-      // await this.fetchEstado()
-      // return data
+      const auth = useAuthStore()
+
 
       let firmador = new FirmaPeruIntegrador({
+
         getParams: () => {
-          // let route = "http://127.0.0.1:8000/app/tramite/firma_token_params/"
-          // if (process.env.MIX_PRODUCCION != 0) {
-          //     route = 'http://proyectos.regionhuanuco.gob.pe/app/tramite/firma_token_params/'
-          // }
+          const cargo = auth.user.adm_cargo.split(" ").join("_");
           let parametros = {
-            // "param_url": route + r.data.id + "/" + r.data.token,
-            // "param_url": "http://firmaperu.test/parametros2.php",
-            // "param_url": "http://127.0.0.1:8000/firmaperu/parametros",
-            "param_url": API_BASE_URL+ "/firmaperu/parametros?idfile="+ idfile,
+            "param_url": API_BASE_URL + "/api/firmaperu/parametros/" + idfile + "/" + encodeURIComponent(cargo) + "/" + auth.user.id,
             "param_token": "1626476967",
             "document_extension": "pdf"
           }
-          console.log(JSON.stringify(parametros))
+          // console.log(JSON.stringify(parametros))
           return btoa(JSON.stringify(parametros))
+        },
+        signatureOk: () => {
+          let data = {
+            mensaje: "Declaración firmada correctamente."
+          }
+          return JSON.stringify(data)
         }
       })
       firmador.startSignature()

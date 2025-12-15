@@ -244,6 +244,7 @@ const firmarDeclaracion = async () => {
 
     mensajeFirma.value = resp.message || 'Declaración firmada correctamente.'
     tipoMensajeFirma.value = 'ok'
+    
   } catch (error) {
     console.error(error)
     mensajeFirma.value =

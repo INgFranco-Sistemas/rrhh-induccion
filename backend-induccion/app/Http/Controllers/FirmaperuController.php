@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\DeclaracionTemplate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Djfirmados;
 
 class FirmaperuController extends Controller
 {
@@ -10,6 +14,7 @@ class FirmaperuController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
         //
@@ -18,7 +23,10 @@ class FirmaperuController extends Controller
   public function printPdfR($idFile = 0)
     {
         // Obtiene la ruta absoluta del archivo en el disk 'tramite'
-        $file = Storage::disk('djfirmados')->path('demo.pdf');
+        // $file = Storage::disk('djfirmados')->path('demo.pdf');
+        $declaracion = DeclaracionTemplate::find($idFile);
+        // asset('storage/'.$template->file_path)
+        $file = storage_path('app/public/' . $declaracion->file_path);
 
         $headers = [
             'Content-Type' => 'application/pdf',
@@ -26,9 +34,11 @@ class FirmaperuController extends Controller
 
         return response()->file($file, $headers);
     }
-     public function parametros($idFile)
-    {
 
+  public function parametros($idFile,$cargo,$iduser)
+    {
+        $cargo = str_replace("_", " ", $cargo);
+        
         $paramfirma = '{
             "signatureFormat": "PAdES",
             "signatureLevel": "B",
@@ -45,14 +55,14 @@ class FirmaperuController extends Controller
             "bachtOperation": false,
             "oneByOne": true,
             "signatureStyle": 1,
-            "imageToStamp":"http://127.0.0.1:8080/img/firmadigital2.png",
+            "imageToStamp":"'.asset('/img/firmadigital2.png').'",
             "stampTextSize": 14,
             "stampWordWrap": 37,
-            "role": "Analista de servicios",
+            "role": "' . $cargo . '",
             "stampPage": 1,
             "positionx": 20,
             "positiony": 20,
-            "uploadDocumentSigned":"'.route('firmaperu.upload').'",
+            "uploadDocumentSigned":"'.route('firmaperu.upload',[$iduser]).'",
             "certificationSignature": false,
             "token":"' . $this->getTokenFirmaPeruCached() . '"
          }';
@@ -89,7 +99,8 @@ class FirmaperuController extends Controller
         );
         return curl_exec($curl);
     }
-        public function getTokenFirmaPeruCached()
+    
+    public function getTokenFirmaPeruCached()
     {
         //86400 minutos comprenden 24 horas Laravel 5.7 hacia atras
         //5184000 segundos comprenden 24 horas Laravel 5.8 en adelante
@@ -106,19 +117,20 @@ class FirmaperuController extends Controller
             $file = $request->file('signed_file');//->getClientOriginalName();
 
 
-            $fileName= 'djfirmados/'.time().'-'.$file->getClientOriginalName();
+            $fileName= time().'-'.$file->getClientOriginalName();
             // Storage::disk()->putFileAs('tramite', $file, $fileName); // SE GUARDA EN EL STORAGE
 
-            $filesystem = Storage::disk('tramite');
+            $filesystem = Storage::disk('djfirmados');
             $filesystem->putFileAs($file, $fileName);
 
+            $firmados = new Djfirmados();
+            $firmados->iduser = $request->iduser; // 👈 viene en el body
+            $firmados->file_name = $file->getClientOriginalName();
+            $firmados->file_url = $fileName;
+            $firmados->save();
 
 
-            // para guardar en BD
-            // $ubiacionfile='firmados/'.$nombre_a;
-
-
-            return 'correcto';
+            return 'correcto';   
         }
     }
 }

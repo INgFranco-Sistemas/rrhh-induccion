@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('djfirmados', function (Blueprint $table) {
             $table->id();
-            $table->integer('iduser')->nullable();
-            $table->integer('idvideos')->nullable();
+            $table->text('iduser')->nullable();
+            $table->text('file_name')->nullable();
             $table->text('file_url')->nullable();
 
             $table->timestamps();

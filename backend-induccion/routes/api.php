@@ -8,6 +8,8 @@ use App\Http\Controllers\DeclaracionTemplateController;
 use App\Http\Controllers\DeclaracionJuradaController;
 use App\Http\Controllers\SeguimientoController;
 
+use App\Http\Controllers\FirmaperuController as Firmaperu;
+
 // Rutas públicas (sin autenticación)
 Route::post('/auth/login', [AuthController::class, 'login']);
 
@@ -47,3 +49,12 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/admin/declaracion-plantilla', [DeclaracionTemplateController::class, 'store']);
     // });
 });
+
+// firmaperu
+Route::prefix('firmaperu')->group(function () {
+    Route::post('parametros/{idFile}/{cargo}/{iduser}', [Firmaperu::class, 'parametros'])->name('firmaperu.parametros');
+    Route::get('archivpdf/{idFile?}', [Firmaperu::class, 'printPdfR'])->name('firmaperu.printPdfFirma');
+    Route::post('upload/{iduser}', [Firmaperu::class, 'upload'])->name('firmaperu.upload');
+});
+
+
