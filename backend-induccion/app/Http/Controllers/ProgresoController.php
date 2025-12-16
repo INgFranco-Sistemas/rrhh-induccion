@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Video;
 use App\Models\VideoUserProgress;
 use Illuminate\Http\Request;
+use App\Models\Djfirmados;
 
 class ProgresoController extends Controller
 {
@@ -74,54 +75,59 @@ class ProgresoController extends Controller
     // Estado general del curso para el usuario logueado
     // GET /api/curso/estado
     // Estado general del curso para el usuario logueado
-// GET /api/curso/estado
-public function estadoCurso(Request $request)
-{
-    $user = $request->user();
+    // GET /api/curso/estado
+    public function estadoCurso(Request $request)
+    {
+        // $user = $request->user();
+        $user = auth()->user();
 
-    // Traemos todos los videos del curso ordenados
-    $videos = Video::where('activo', true)
-        ->orderBy('orden')
-        ->get();
+        // Traemos todos los videos del curso ordenados
+        $videos = Video::where('activo', true)
+            ->orderBy('orden')
+            ->get();
 
-    // Traemos el progreso del usuario
-    $progresos = VideoUserProgress::where('user_id', $user->id)
-        ->get()
-        ->keyBy('video_id'); // para acceder rápido por ID
+        // Traemos el progreso del usuario
+        $progresos = VideoUserProgress::where('user_id', $user->id)
+            ->get()
+            ->keyBy('video_id'); // para acceder rápido por ID
 
-    $videosEstado = [];
-    $anteriorCompletado = true; // el primer video siempre va desbloqueado
+        $videosEstado = [];
+        $anteriorCompletado = true; // el primer video siempre va desbloqueado
 
-    foreach ($videos as $video) {
-        $prog = $progresos->get($video->id);
+        foreach ($videos as $video) {
+            $prog = $progresos->get($video->id);
 
-        $completado = $prog?->completado ?? false;
+            $completado = $prog?->completado ?? false;
 
-        $videosEstado[] = [
-            'id'                => $video->id,
-            'titulo'            => $video->titulo,
-            'descripcion'       => $video->descripcion,
-            'orden'             => $video->orden,
-            'duracion_segundos' => $video->duracion_segundos,
-            'file_path'         => $video->file_path,
-            'url'               => $video->url,      // por si lo usas en el front
-            'completado'        => $completado,
-            'bloqueado'         => !$anteriorCompletado, // 👈 AQUÍ EL BLOQUEO
-        ];
+            $videosEstado[] = [
+                'id'                => $video->id,
+                'titulo'            => $video->titulo,
+                'descripcion'       => $video->descripcion,
+                'orden'             => $video->orden,
+                'duracion_segundos' => $video->duracion_segundos,
+                'file_path'         => $video->file_path,
+                'url'               => $video->url,      // por si lo usas en el front
+                'completado'        => $completado,
+                'bloqueado'         => !$anteriorCompletado, // 👈 AQUÍ EL BLOQUEO
+            ];
 
-        // Para el siguiente video: solo estará desbloqueado si ESTE está completado
-        $anteriorCompletado = $completado;
+            // Para el siguiente video: solo estará desbloqueado si ESTE está completado
+            $anteriorCompletado = $completado;
+        }
+
+        // Revisamos si ya terminó todo
+        $todosCompletos = collect($videosEstado)->every(fn ($v) => $v['completado']);
+
+        // Revisamos si ya firmó la declaración
+        $verificarDeclaracion = Djfirmados::where('iduser', $user->id)->orderBy('id', 'desc')->first();
+
+        return response()->json([
+            'videos'              => array_values($videosEstado),
+            'puede_firmar'        => $todosCompletos,
+            'declaracion_firmada' => $verificarDeclaracion ? true : false ,
+            'idFile_firmado'          => $verificarDeclaracion ? $verificarDeclaracion->id : null,
+            'declaracion'         => null,
+        ]);
     }
-
-    // Revisamos si ya terminó todo
-    $todosCompletos = collect($videosEstado)->every(fn ($v) => $v['completado']);
-
-    return response()->json([
-        'videos'              => array_values($videosEstado),
-        'puede_firmar'        => $todosCompletos,
-        'declaracion_firmada' => false,
-        'declaracion'         => null,
-    ]);
-}
 
 }

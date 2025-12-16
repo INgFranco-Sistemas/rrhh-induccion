@@ -12,7 +12,7 @@ class DeclaracionJuradaController extends Controller
     // POST /api/declaracion/firmar
     public function firmar(Request $request)
     {
-        $user = $request->user();
+        $user = $request->iduser;
 
         $request->validate([
             'texto_declaracion' => 'required|string',
@@ -21,7 +21,7 @@ class DeclaracionJuradaController extends Controller
         // 1. Verificar que el usuario completó todos los videos activos
         $totalVideos = Video::where('activo', true)->count();
 
-        $videosCompletados = VideoUserProgress::where('user_id', $user->id)
+        $videosCompletados = VideoUserProgress::where('user_id', $user)
             ->where('completado', true)
             ->count();
 
@@ -44,7 +44,7 @@ class DeclaracionJuradaController extends Controller
 
         // 3. Registrar la declaración
         $declaracion = DeclaracionJurada::create([
-            'user_id'           => $user->id,
+            'user_id'           => $user,
             'texto_declaracion' => $request->texto_declaracion,
             'ip_address'        => $request->ip(),
             'user_agent'        => $request->userAgent(),

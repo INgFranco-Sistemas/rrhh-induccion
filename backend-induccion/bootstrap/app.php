@@ -17,9 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
         ]);
         // Middleware global para CSRF en rutas web
-        $middleware->web(append: [
-            VerifyCsrfToken::class,
-        ]);
+       $middleware->web([
+        \App\Http\Middleware\VerifyCsrfToken::class,
+    ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

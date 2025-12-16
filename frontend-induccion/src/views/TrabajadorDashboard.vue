@@ -16,8 +16,7 @@
 
         <!-- Card: Comenzar curso -->
         <div
-          class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-lg"
-        >
+          class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-lg">
           <div class="space-y-1">
             <p class="text-xs font-semibold text-sky-400 uppercase tracking-wide">
               Proceso de inducción
@@ -30,20 +29,15 @@
             </p>
           </div>
 
-          <RouterLink
-            :to="{ name: 'trabajador.videos' }"
-            class="inline-flex items-center justify-center rounded-full bg-sky-500 hover:bg-sky-400
-                   text-slate-950 text-xs font-semibold px-4 py-2 shadow-lg shadow-sky-500/30"
-          >
+          <RouterLink :to="{ name: 'trabajador.videos' }" class="inline-flex items-center justify-center rounded-full bg-sky-500 hover:bg-sky-400
+                   text-slate-950 text-xs font-semibold px-4 py-2 shadow-lg shadow-sky-500/30">
             Ver videos →
           </RouterLink>
           <!-- NOTA: ajusta el name de la ruta arriba según tu router -->
         </div>
 
         <!-- Card: Progreso del curso -->
-        <div
-          class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-3"
-        >
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-3">
           <div class="flex items-center justify-between gap-3">
             <p class="text-sm font-semibold text-slate-50">
               Progreso del Proceso
@@ -55,10 +49,8 @@
 
           <!-- Barra de progreso -->
           <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-            <div
-              class="h-full bg-emerald-500 transition-all duration-500"
-              :style="{ width: progresoPorcentaje + '%' }"
-            ></div>
+            <div class="h-full bg-emerald-500 transition-all duration-500" :style="{ width: progresoPorcentaje + '%' }">
+            </div>
           </div>
 
           <p class="text-xs text-slate-400">
@@ -67,9 +59,7 @@
         </div>
 
         <!-- Card: Declaración jurada -->
-        <div
-          class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-lg"
-        >
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-lg">
           <p class="text-sm font-semibold text-slate-50 mb-1">
             Declaración jurada de culminación
           </p>
@@ -86,26 +76,18 @@
               Fecha de firma:
               {{ new Date(curso.declaracion.firmado_at).toLocaleString() }}
             </p>
-            <a
-              v-if="curso.plantillaDeclaracion?.url"
-              :href="curso.plantillaDeclaracion.url"
-              target="_blank"
-              rel="noopener"
-              class="text-xs text-sky-400 hover:text-sky-300"
-            >
+            <a v-if="curso.plantillaDeclaracion?.url" :href="curso.plantillaDeclaracion.url" target="_blank"
+              rel="noopener" class="text-xs text-sky-400 hover:text-sky-300">
               Ver declaración jurada (PDF) →
             </a>
           </template>
 
           <!-- SI NO HA FIRMADO -->
           <template v-else>
-            <button
-              :disabled="!curso.puedeFirmar || !curso.plantillaDeclaracion?.url"
-              @click="abrirModalDeclaracion"
+            <button :disabled="!curso.puedeFirmar || !curso.plantillaDeclaracion?.url" @click="abrirModalDeclaracion"
               class="inline-flex items-center rounded-full bg-emerald-500 hover:bg-emerald-400
                      disabled:bg-emerald-500/40 text-slate-950 text-xs font-semibold px-5 py-2
-                     shadow-lg shadow-emerald-500/30"
-            >
+                     shadow-lg shadow-emerald-500/30">
               DECLARACIÓN JURADA
             </button>
 
@@ -122,24 +104,17 @@
     </div>
 
     <!-- MODAL FLOTANTE DECLARACIÓN -->
-    <div
-      v-if="showDeclaracionModal"
+    <div v-if="showDeclaracionModal"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-      @click.self="cerrarModalDeclaracion"
-    >
-      <div
-        class="w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl
-               shadow-2xl overflow-hidden flex flex-col"
-      >
+      @click.self="cerrarModalDeclaracion">
+      <div class="w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl
+               shadow-2xl overflow-hidden flex flex-col">
         <!-- Header modal -->
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
           <h2 class="text-sm font-semibold text-slate-50">
             Declaración jurada del curso de inducción
           </h2>
-          <button
-            @click="cerrarModalDeclaracion"
-            class="text-xs text-slate-400 hover:text-slate-200"
-          >
+          <button @click="cerrarModalDeclaracion" class="text-xs text-slate-400 hover:text-slate-200">
             ✕ Cerrar
           </button>
         </div>
@@ -148,11 +123,8 @@
         <div class="flex-1 flex flex-col md:flex-row">
           <!-- PDF -->
           <div class="flex-1 min-h-[800px] border-b md:border-b-0 md:border-r border-slate-800">
-            <iframe
-              v-if="curso.plantillaDeclaracion?.url"
-              :src="curso.plantillaDeclaracion.url"
-              class="w-full h-full"
-            ></iframe>
+            <iframe v-if="curso.plantillaDeclaracion?.url" :src="curso.plantillaDeclaracion.url"
+              class="w-full h-full"></iframe>
             <p v-else class="p-4 text-xs text-amber-400">
               No se encontró la declaración jurada en PDF. Contacte al administrador.
             </p>
@@ -166,13 +138,9 @@
               culminado el curso.
             </p>
 
-            <button
-              @click="firmarDeclaracion"
-              :disabled="firmando"
-              class="inline-flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-400
+            <button @click="firmarDeclaracion" :disabled="firmando" class="inline-flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-400
                      disabled:bg-emerald-500/60 text-slate-950 text-xs font-semibold px-4 py-2
-                     shadow-lg shadow-emerald-500/30"
-            >
+                     shadow-lg shadow-emerald-500/30">
               <span v-if="!firmando">Firmar declaración</span>
               <span v-else>Firmando...</span>
             </button>
@@ -244,6 +212,19 @@ const firmarDeclaracion = async () => {
 
     mensajeFirma.value = resp.message || 'Declaración firmada correctamente.'
     tipoMensajeFirma.value = 'ok'
+    
+    // Ahora espera a que el integrador complete la firma (signatureOk)
+    // Ese callback devuelve el mensaje final
+    // Puedes escuchar un evento o resolver la promesa desde el store
+    // Ejemplo simple: después de un pequeño delay, revisa el flag
+    const checkFinal = setInterval(() => {
+      if (curso.declaracionFirmada) {
+        mensajeFirma.value = 'Firma finalizada correctamente ✅'
+        tipoMensajeFirma.value = 'ok'
+        cerrarModalDeclaracion()
+        clearInterval(checkFinal)
+      }
+    }, 1000)
     
   } catch (error) {
     console.error(error)

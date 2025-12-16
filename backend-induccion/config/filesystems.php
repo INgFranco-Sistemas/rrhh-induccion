@@ -48,8 +48,10 @@ return [
         ],
 
         'djfirmados' => [
-        'driver' => 'local',
-        'root' => storage_path('djfirmados'),
+            'driver' => 'local',
+            'root' => storage_path('djfirmados'),
+            'url' => env('APP_URL').'/storage/djfirmados',   // 👈 URL pública
+            'visibility' => 'public',
         ],
 
         's3' => [

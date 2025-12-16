@@ -14,5 +14,6 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'api/firmaperu/*',
         'api/firmaperu/parametros/*',
+        'storage/djfirmados/*',
     ];
 }

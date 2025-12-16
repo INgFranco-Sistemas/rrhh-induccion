@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('declaraciones_juradas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id');
             $table->text('texto_declaracion');
             $table->string('ip_address')->nullable();
             $table->string('user_agent')->nullable();

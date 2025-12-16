@@ -57,8 +57,8 @@ export const useCursoStore = defineStore('curso', {
     },
 
     async firmarDeclaracion(texto, idfile = null) {
-      const auth = useAuthStore()
 
+      const auth = useAuthStore()
 
       let firmador = new FirmaPeruIntegrador({
 
@@ -72,15 +72,28 @@ export const useCursoStore = defineStore('curso', {
           // console.log(JSON.stringify(parametros))
           return btoa(JSON.stringify(parametros))
         },
-        signatureOk: () => {
-          let data = {
-            mensaje: "Declaración firmada correctamente."
+        signatureOk: async () => {
+          try {
+            alert('Firma realizada con éxito.')
+
+            const { data } = await api.post('/declaracion/firmar', {
+              texto_declaracion: texto,
+              iduser: auth.user.id,
+            })
+
+            await this.fetchEstado()
+            this.declaracionFirmada = true
+
+            return { message: 'Firma finalizada correctamente ✅', data }
+          } catch (error) {
+            console.error('[firmarDeclaracion] Error al registrar firma:', error)
+            throw error
           }
-          return JSON.stringify(data)
-        }
+        },
       })
       firmador.startSignature()
-
+      return { message: 'Proceso de firma iniciado.' }
     },
   },
+  persist: true
 })

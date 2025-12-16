@@ -63,6 +63,33 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+     async refresh() {
+      try {
+        const { data } = await api.post('/auth/refresh', {}, {
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        })
+
+        this.token = data.access_token
+        this.expires_in = data.expires_in
+        this.user = data.user
+        this.sede = data.sede
+        this.roles = data.roles || []
+        this.rol_principal = data.rol_principal
+        this.permissions = data.permissions || []
+
+        localStorage.setItem('token', this.token)
+        localStorage.setItem('user', JSON.stringify(this.user))
+
+        return data
+      } catch (error) {
+        console.error('[AuthStore] Error al refrescar token:', error)
+        this.logout()
+        throw error
+      }
+    },
+
     logout() {
       this.token = null
       this.user = null

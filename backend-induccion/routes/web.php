@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DeclaracionTemplateController;
 
 
 Route::get('/', function () {
@@ -8,3 +9,4 @@ Route::get('/', function () {
 });
 
 
+Route::get('storage/djfirmados/{filename}', [DeclaracionTemplateController::class, 'muestrafile']);
