@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import api from '../api/axios'
-// import FirmaPeruIntegrador from '../FirmaPeru'
+import FirmaPeruIntegrador from '../FirmaPeru'
 import { useAuthStore } from './auth'
 
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL.replace('/api', '') // quitamos /api para usar host base
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL // quitamos /api para usar host base
 
 export const useCursoStore = defineStore('curso', {
@@ -57,42 +56,44 @@ export const useCursoStore = defineStore('curso', {
       }
     },
 
-    firmarDeclaracion(texto, idfile = null) {
+    async firmarDeclaracion(texto, idfile = null) {
 
       const auth = useAuthStore()
 
-      const cargo = auth.user.adm_cargo.split(" ").join("_");
+      let firmador = new FirmaPeruIntegrador({
 
-      let parametros = {
-        param_url: `${API_BASE_URL}/firmaperu/parametros/${idfile}/${cargo}/${auth.user.id}`,
-        param_token: "1626476967",
-        document_extension: "pdf"
-      }
-      console.log(JSON.stringify(parametros))
-      const datosb64 = btoa(JSON.stringify(parametros))
-      console.log("Datos en base64:", datosb64)
-      startSignature(48596, datosb64);
+        getParams: () => {
+          const cargo = auth.user.adm_cargo.split(" ").join("_");
+          let parametros = {
+            "param_url": API_BASE_URL + "/firmaperu/parametros/" + idfile + "/" + encodeURIComponent(cargo) + "/" + auth.user.id,
+            "param_token": "1626476967",
+            "document_extension": "pdf"
+          }
+          // console.log(JSON.stringify(parametros))
+          return btoa(JSON.stringify(parametros))
+        },
+        signatureOk: async () => {
+          try {
+            alert('Firma realizada con éxito.')
 
+            const { data } = await api.post('/declaracion/firmar', {
+              texto_declaracion: texto,
+              iduser: auth.user.id,
+            })
+
+            await this.fetchEstado()
+            this.declaracionFirmada = true
+
+            return { message: 'Firma finalizada correctamente ✅', data }
+          } catch (error) {
+            console.error('[firmarDeclaracion] Error al registrar firma:', error)
+            throw error
+          }
+        },
+      })
+      firmador.startSignature()
       return { message: 'Proceso de firma iniciado.' }
     },
-    
-    async firmarfromatoDeclaracion(texto) {
-      const auth = useAuthStore()
-
-      try {
-        const { data } = await api.post('/declaracion/firmar', {
-          texto_declaracion: texto || '',
-          iduser: auth.user.id,
-        })
-        await this.fetchEstado()
-        this.declaracionFirmada = true
-        console.log('[FirmaPerú] Firma registrada correctamente', data)
-      } catch (error) {
-        console.error('[FirmaPerú] Error al registrar firma:', error)
-      }
-    }
   },
-
-
   // persist: true
 })

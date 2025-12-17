@@ -157,12 +157,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useCursoStore } from '../stores/curso'
-import { useAuthStore } from '../stores/auth'
 
 const curso = useCursoStore()
-const auth = useAuthStore()
 
 // Modal
 const showDeclaracionModal = ref(false)
@@ -171,9 +170,10 @@ const mensajeFirma = ref('')
 const tipoMensajeFirma = ref('') // 'ok' | 'error'
 
 // Progreso
-const progresoPorcentaje = computed(() =>
-  curso.totalVideos ? Math.round((curso.completados / curso.totalVideos) * 100) : 0
-)
+const progresoPorcentaje = computed(() => {
+  if (!curso.totalVideos) return 0
+  return Math.round((curso.completados / curso.totalVideos) * 100)
+})
 
 const mensajeProgreso = computed(() => {
   if (!curso.totalVideos) return 'Aún no hay videos registrados en el curso.'
@@ -185,7 +185,7 @@ const mensajeProgreso = computed(() => {
 })
 
 const claseMensajeFirma = computed(() =>
-  tipoMensajeFirma.value === 'ok' ? 'text-emerald-400' : 'text-red-400'
+  tipoMensajeFirma.value === 'ok' ? 'text-emerald-400' : 'text-red-400',
 )
 
 // Abrir / cerrar modal
@@ -208,10 +208,25 @@ const firmarDeclaracion = async () => {
   try {
     const texto =
       'Declaro bajo juramento que he leído y acepto la declaración jurada del curso de inducción.'
-    const resp = await curso.firmarDeclaracion(texto, curso.plantillaDeclaracion?.id)
+    const resp = await curso.firmarDeclaracion(texto, curso.plantillaDeclaracion.id)
 
     mensajeFirma.value = resp.message || 'Declaración firmada correctamente.'
     tipoMensajeFirma.value = 'ok'
+    
+    // Ahora espera a que el integrador complete la firma (signatureOk)
+    // Ese callback devuelve el mensaje final
+    // Puedes escuchar un evento o resolver la promesa desde el store
+    // Ejemplo simple: después de un pequeño delay, revisa el flag
+    const checkFinal = setInterval(() => {
+      if (curso.declaracionFirmada) {
+        mensajeFirma.value = 'Firma finalizada correctamente ✅'
+        tipoMensajeFirma.value = 'ok'
+        curso.fetchPlantillaDeclaracion()
+        cerrarModalDeclaracion()
+        clearInterval(checkFinal)
+      }
+    }, 1000)
+    
   } catch (error) {
     console.error(error)
     mensajeFirma.value =
@@ -222,21 +237,8 @@ const firmarDeclaracion = async () => {
   }
 }
 
-
-
 onMounted(() => {
   curso.fetchEstado()
   curso.fetchPlantillaDeclaracion()
-
-  window.signatureOk = async () => {
-    alert('DOCUMENTO FIRMADO ✅')
-    const texto =
-      'Declaro bajo juramento que he leído y acepto la declaración jurada del curso de inducción.'
-    curso.firmarfromatoDeclaracion(texto || '')
-
-    // Cerrar modal de forma reactiva
-    cerrarModalDeclaracion()
-  }
-
 })
 </script>
