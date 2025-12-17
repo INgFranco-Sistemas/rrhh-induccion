@@ -74,7 +74,7 @@ export const useCursoStore = defineStore('curso', {
         },
         signatureOk: async () => {
           try {
-            alert('Firma realizada con éxito.')
+            // alert('Firma realizada con éxito.')
 
             const { data } = await api.post('/declaracion/firmar', {
               texto_declaracion: texto,
@@ -91,6 +91,7 @@ export const useCursoStore = defineStore('curso', {
           }
         },
       })
+      
       firmador.startSignature()
       return { message: 'Proceso de firma iniciado.' }
     },

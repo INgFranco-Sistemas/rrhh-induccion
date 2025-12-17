@@ -132,18 +132,26 @@
 
           <!-- Lado derecho -->
           <div class="w-full md:w-80 p-4 flex flex-col gap-3">
+
             <p class="text-xs text-slate-300">
               Después de revisar el documento PDF, haz clic en el siguiente botón para registrar
               tu aceptación. Esta acción quedará registrada como tu declaración jurada de haber
               culminado el curso.
             </p>
 
-            <button @click="firmarDeclaracion" :disabled="firmando" class="inline-flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-400
-                     disabled:bg-emerald-500/60 text-slate-950 text-xs font-semibold px-4 py-2
-                     shadow-lg shadow-emerald-500/30">
-              <span v-if="!firmando">Firmar declaración</span>
-              <span v-else>Firmando...</span>
+            <button v-if="!firmador.serverOnline" @click="startServer" :disabled="firmador.serverStarting"
+              class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold px-4 py-3 transition-all">
+              <span v-if="firmador.serverStarting" class="animate-spin">⏳</span>
+              <span v-else>📝</span>
+              {{ firmador.serverStarting ? 'Iniciando servicio...' : 'Iniciar Componente de Firma' }}
             </button>
+
+            <button v-else @click="firmarDeclaracion" :disabled="firmando"
+              class="w-full inline-flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-500/60 text-slate-950 text-xs font-semibold px-4 py-2 shadow-lg shadow-emerald-500/30">
+              <span v-if="!firmando">Firmar declaración</span>
+              <span v-else>Procesando firma...</span>
+            </button>
+
 
             <p v-if="mensajeFirma" :class="['text-xs', claseMensajeFirma]">
               {{ mensajeFirma }}
@@ -157,11 +165,17 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, reactive } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useCursoStore } from '../stores/curso'
+import FirmaPeruIntegrador from '../FirmaPeru'
 
 const curso = useCursoStore()
+// USAR REACTIVE PARA QUE VUE REACCIONE A LOS CAMBIOS INTERNOS DE LA CLASE
+const firmador = reactive(new FirmaPeruIntegrador({
+  vervose: true, // Útil para depurar en consola
+
+}))
 
 // Modal
 const showDeclaracionModal = ref(false)
@@ -190,6 +204,7 @@ const claseMensajeFirma = computed(() =>
 
 // Abrir / cerrar modal
 const abrirModalDeclaracion = () => {
+  firmador.startSignature()
   mensajeFirma.value = ''
   tipoMensajeFirma.value = ''
   showDeclaracionModal.value = true
@@ -212,7 +227,7 @@ const firmarDeclaracion = async () => {
 
     mensajeFirma.value = resp.message || 'Declaración firmada correctamente.'
     tipoMensajeFirma.value = 'ok'
-    
+
     // Ahora espera a que el integrador complete la firma (signatureOk)
     // Ese callback devuelve el mensaje final
     // Puedes escuchar un evento o resolver la promesa desde el store
@@ -226,7 +241,7 @@ const firmarDeclaracion = async () => {
         clearInterval(checkFinal)
       }
     }, 1000)
-    
+
   } catch (error) {
     console.error(error)
     mensajeFirma.value =
@@ -236,9 +251,16 @@ const firmarDeclaracion = async () => {
     firmando.value = false
   }
 }
+const startServer= () => {
+  firmador.runService()
+}
 
-onMounted(() => {
-  curso.fetchEstado()
-  curso.fetchPlantillaDeclaracion()
+onMounted(async() => {
+  await curso.fetchEstado()
+  await curso.fetchPlantillaDeclaracion()
+
+  // Reiniciar la verificación del servidor local de FirmaPerú
+  firmador.startCheckServer()
+
 })
 </script>

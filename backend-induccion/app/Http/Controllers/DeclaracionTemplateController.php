@@ -25,7 +25,7 @@ class DeclaracionTemplateController extends Controller
         $verificarDeclaracion = Djfirmados::where('iduser', $user->id)->orderBy('id', 'desc')->first();
             // Construir URL según exista firma o no
         $url = $verificarDeclaracion
-        ? Storage::disk('djfirmados')->url($verificarDeclaracion->file_url)
+        ? asset('djfirmados/'.$verificarDeclaracion->file_url)//Storage::disk('djfirmados')->url($verificarDeclaracion->file_url)
         : asset('storage/'.$template->file_path);
          
 
@@ -73,17 +73,21 @@ class DeclaracionTemplateController extends Controller
     }
 
     public function muestrafile($filename)
-    {
-        // Ruta completa en el disco djfirmados
-        $path = Storage::disk('djfirmados')->path($filename);
-
-        if (!Storage::disk('djfirmados')->exists($filename)) {
-            abort(404, 'Archivo no encontrado');
-        }
-
-        // Devolver el PDF como respuesta
-        return response()->file($path, [
-            'Content-Type' => 'application/pdf',
-        ]);
+{
+    // Verificar si el archivo existe antes de obtener el path
+    if (!Storage::disk('djfirmados')->exists($filename)) {
+        abort(404, 'Archivo no encontrado');
     }
+
+    $path = Storage::disk('djfirmados')->path($filename);
+
+    return response()->file($path, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        // Evita problemas de caché si el archivo se llega a actualizar
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+        'Pragma' => 'no-cache',
+        'Expires' => '0',
+    ]);
+}
 }

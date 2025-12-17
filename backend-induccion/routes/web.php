@@ -9,4 +9,4 @@ Route::get('/', function () {
 });
 
 
-Route::get('storage/djfirmados/{filename}', [DeclaracionTemplateController::class, 'muestrafile']);
+Route::get('djfirmados/{filename}', [DeclaracionTemplateController::class, 'muestrafile']);
