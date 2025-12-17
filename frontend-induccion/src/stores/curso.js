@@ -70,6 +70,7 @@ export const useCursoStore = defineStore('curso', {
       }
       console.log(JSON.stringify(parametros))
       const datosb64 = btoa(JSON.stringify(parametros))
+      console.log("Datos en base64:", datosb64)
       startSignature(48596, datosb64);
 
       return { message: 'Proceso de firma iniciado.' }
@@ -83,7 +84,7 @@ export const useCursoStore = defineStore('curso', {
           texto_declaracion: texto || '',
           iduser: auth.user.id,
         })
-        await curso.fetchEstado()
+        await this.fetchEstado()
         this.declaracionFirmada = true
         console.log('[FirmaPerú] Firma registrada correctamente', data)
       } catch (error) {
