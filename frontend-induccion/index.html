@@ -1,13 +1,40 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend-induccion</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>frontend-induccion</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script type="text/javascript">
+
+  var jqFirmaPeru=jQuery.noConflict(true);
+
+  function signatureInit()
+          {
+              alert('PROCESO INICIADO');
+          }
+  // function signatureOk()
+  //         {
+  //             alert('DOCUMENTO FIRMADO')
+  //             $('#mdlInvoker').modal('hide')
+  //             location.reload();
+  //         }
+  function signatureCancel()
+          {
+              alert('OPERACIÓN CANCELADA')
+              $('#mdlInvoker').modal('hide')
+          }
+
+</script>
+  <script src="https://apps.firmaperu.gob.pe/web/clienteweb/firmaperu.min.js"></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>
