@@ -208,6 +208,8 @@ const abrirModalDeclaracion = () => {
   mensajeFirma.value = ''
   tipoMensajeFirma.value = ''
   showDeclaracionModal.value = true
+// ACTIVAR PARA QUE SE ACTAULIZE EL PDF CON EL FORMATO PARA FIRMAR
+
 }
 
 const cerrarModalDeclaracion = () => {
@@ -256,6 +258,7 @@ const startServer= () => {
 }
 
 onMounted(async() => {
+  await curso.actualizadatosenformatopdf()
   await curso.fetchEstado()
   await curso.fetchPlantillaDeclaracion()
 

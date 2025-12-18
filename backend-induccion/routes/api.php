@@ -24,6 +24,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);    
     
     Route::get('/declaracion-plantilla', [DeclaracionTemplateController::class, 'show']);
+    Route::post('/actualizapdf', [DeclaracionTemplateController::class, 'actualizapdf']);
     // Todos los usuarios autenticados (admin + trabajador)
     Route::get('/videos', [VideoController::class, 'index']);
     Route::get('/videos/{video}', [VideoController::class, 'show']);

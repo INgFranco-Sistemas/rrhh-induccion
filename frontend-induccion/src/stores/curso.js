@@ -91,9 +91,22 @@ export const useCursoStore = defineStore('curso', {
           }
         },
       })
-      
+
       firmador.startSignature()
       return { message: 'Proceso de firma iniciado.' }
+    },
+
+    async actualizadatosenformatopdf() {
+      const auth = useAuthStore()
+      try {
+        const { data } = await api.post('/actualizapdf', {
+          nombre: auth.user.fullname,
+          dni: auth.user.adm_dni
+        })
+        console.log('Respuesta de actualizapdf =>', data)
+      } catch (error) {
+        console.error('Error cargando plantilla de declaración:', error)
+      }
     },
   },
   // persist: true
