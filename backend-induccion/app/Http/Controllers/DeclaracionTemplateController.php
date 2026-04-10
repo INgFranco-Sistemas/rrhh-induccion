@@ -124,9 +124,18 @@ class DeclaracionTemplateController extends Controller
         $pdf->SetXY(80, 56); 
         $pdf->Write(0, utf8_decode($request->dni));
 
-        $fecha= date('d/m/Y');
-        $pdf->SetXY(50, 125); 
-        $pdf->Write(0, utf8_decode($fecha));
+        // $fecha= date('d/m/Y');
+        // $pdf->SetXY(50, 125); 
+        // $pdf->Write(0, utf8_decode($fecha));
+
+        $fecha = date('d/m/Y');
+
+            // Se posiciona a 20 unidades del borde inferior
+            $pdf->SetY(-20); 
+            // Establecemos la X (margen izquierdo) en 50
+            $pdf->SetX(50); 
+
+            $pdf->Write(0, utf8_decode($fecha));
 
         // 5. Definir el nombre del archivo y la ruta de guardado
         $nombreArchivo = "{$dni}.pdf";

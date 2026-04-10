@@ -58,6 +58,20 @@
           </p>
         </div>
 
+        <!-- PARA COLOCAR LOS PDF -->
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-semibold text-slate-50">
+              Descargar documentos
+            </p>
+            <a href="https://drive.google.com/drive/folders/1gyxAqDyVVt6UzE2zbuo8b863Z4tVfk7s?usp=sharing" target="_blank" class="btn btn-sm btn-primary"> Descargar</a>
+            
+          </div>
+
+
+        </div>
+
         <!-- Card: Declaración jurada -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-lg">
           <p class="text-sm font-semibold text-slate-50 mb-1">
