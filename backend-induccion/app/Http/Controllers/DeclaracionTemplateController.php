@@ -118,10 +118,10 @@ class DeclaracionTemplateController extends Controller
 
         // Ejemplo: Escribir el nombre del usuario en coordenadas X, Y (en mm)
         // Debes ajustar 50, 50 según tu formato
-        $pdf->SetXY(50, 47); 
+        $pdf->SetXY(50, 46); 
         $pdf->Write(0, utf8_decode($request->nombre));
 
-        $pdf->SetXY(80, 56); 
+        $pdf->SetXY(80, 54); 
         $pdf->Write(0, utf8_decode($request->dni));
 
         // $fecha= date('d/m/Y');
@@ -131,7 +131,7 @@ class DeclaracionTemplateController extends Controller
         $fecha = date('d/m/Y');
 
             // Se posiciona a 20 unidades del borde inferior
-            $pdf->SetY(-20); 
+            $pdf->SetY(-25); 
             // Establecemos la X (margen izquierdo) en 50
             $pdf->SetX(50); 
 
