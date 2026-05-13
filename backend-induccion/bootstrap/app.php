@@ -18,8 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // Middleware global para CSRF en rutas web
        $middleware->web([
-        \App\Http\Middleware\VerifyCsrfToken::class,
-    ]);
+            \App\Http\Middleware\VerifyCsrfToken::class,
+        ]);
+        $middleware->trustProxies(at: '*'); 
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
